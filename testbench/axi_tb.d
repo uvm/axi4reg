@@ -49,7 +49,7 @@ class Top: Entity
   import Vaxi_regs_euvm;
   import esdl.intf.verilator.verilated;
 
-  VerilatedVcdD _trace;
+  VerilatedFstD _trace;
 
   Signal!(ubvec!1) rst;
   Signal!(ubvec!1) clk;
@@ -58,11 +58,11 @@ class Top: Entity
 
   AxiIntf!(32, 32) axiIntf;
   
-  void opentrace(string vcdname) {
+  void opentrace(string fstname) {
     if (_trace is null) {
-      _trace = new VerilatedVcdD();
+      _trace = new VerilatedFstD();
       dut.trace(_trace, 99);
-      _trace.open(vcdname);
+      _trace.open(fstname);
     }
   }
 
@@ -117,7 +117,7 @@ class Top: Entity
   override void doBuild() {
     dut = new DVaxi_regs();
     traceEverOn(true);
-    opentrace("axi_regs.vcd");
+    opentrace("axi_regs.fst");
   }
   
   Task!stimulateClk stimulateClkTask;
@@ -159,33 +159,28 @@ class Top: Entity
 class axi_tb: uvm_tb
 {
   Top top;
+  override void initial() {
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.ar_driver", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.aw_driver", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.dw_driver", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.dr_driver", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_driver", "vif", top.axiIntf);
+
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.ar_collector", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.aw_collector", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.w_collector", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.r_collector", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_collector", "vif", top.axiIntf);
+  }
 }
 
 void main(string[] args) {
   import std.stdio;
 
   auto tb = new axi_tb;
-  tb.multicore(0, 1);
   tb.elaborate("tb", args);
   tb.set_seed(1);
-  // tb.setAsyncMode();
 
-  tb.initialize();
-
-  tb.exec_in_uvm_context({
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.ar_driver", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.aw_driver", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.dw_driver", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.dr_driver", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_driver", "vif", tb.top.axiIntf);
-
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.ar_collector", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.aw_collector", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.w_collector", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.r_collector", "vif", tb.top.axiIntf);
-      uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_collector", "vif", tb.top.axiIntf);
-    });
-			   
   tb.start();
   
 }

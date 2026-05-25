@@ -171,6 +171,8 @@ class axi_tb: uvm_tb
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.w_collector", "vif", top.axiIntf);
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.r_collector", "vif", top.axiIntf);
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_collector", "vif", top.axiIntf);
+
+    uvm_config_db!int.set(null, "uvm_test_top.env.agent.dw_seqr", "wait_for_sequences_count", 2);
   }
 }
 

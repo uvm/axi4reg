@@ -1,6 +1,7 @@
 module axi_test;
 
 import uvm;
+import uvm.reg;
 import esdl;
 
 import axi_seq;
@@ -95,6 +96,56 @@ class axi_dir_test: uvm_test
   
   override void report_phase(uvm_phase phase) {
     uvm_info("INFO", "Called my_test::report_phase", UVM_NONE);
+  }
+
+}
+
+class reg_test: uvm_test
+{
+
+  mixin uvm_component_utils;
+   
+  axi_reg_env  env;
+  uvm_reg_sequence!(uvm_sequence!(uvm_reg_item)) seq;
+
+  this(string name="reg_test", uvm_component parent=null) {
+    super(name, parent);
+  }
+
+  override void build_phase(uvm_phase phase) {
+    string seq_name;
+    uvm_info("INFO", "reg_test building...", UVM_NONE);
+    super.build_phase(phase);
+    env = new axi_reg_env("env", this);
+    // env.vif = `TB.wsmreg_axi_if;
+
+    CommandLine cmdl = new CommandLine();
+
+    if (! cmdl.plusArgs("UVM_SEQUENCE=%s", seq_name)) {
+      uvm_fatal("REG TEST", "Test Sequence not specified, use +UVM_SEQUENCE=<reg seq name> command line option");
+    }
+
+    uvm_coreservice_t cs = uvm_coreservice_t.get();                                                     
+    uvm_factory factory = cs.get_factory();
+  
+    uvm_object obj = factory.create_object_by_name(seq_name, "reg_test", seq_name);
+
+    seq = cast (uvm_reg_sequence!(uvm_sequence!uvm_reg_item)) obj;
+
+    if (seq is null) {
+      uvm_report_fatal("NO_SEQUENCE",
+		       "This env requires you to specify the sequence to run using UVM_SEQUENCE=<name>");
+    }
+    env.seq = seq;
+  }
+
+  override void connect_phase(uvm_phase phase) {
+    uvm_info("INFO", "Called my_test::connect_phase", UVM_NONE);
+  }
+   
+  override void report_phase(uvm_phase phase) {
+    uvm_info("INFO", "Called my_test::report_phase", UVM_NONE);
+    // uvm_top.finish_on_completion = 1;
   }
 
 }

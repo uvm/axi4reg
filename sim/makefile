@@ -7,7 +7,8 @@ DUTLIB = obj_dir/DVaxi_regs.a
 TBSRC = ../testbench/axi_seq.d ../testbench/axi_tb.d \
 	../testbench/axi_drv.d ../testbench/axi_mon.d \
 	../testbench/axi_agnt.d ../testbench/axi_env.d \
-	../testbench/axi_scrb.d ../testbench/axi_test.d
+	../testbench/axi_scrb.d ../testbench/axi_test.d \
+	../testbench/axi_reg_adapter.d ../testbench/axi_regs_model.d
 
 all: axi_test
 
@@ -24,3 +25,6 @@ $(DUTLIB): ../rtl/axi_regs.sv
 axi_test:  $(TBSRC) $(DUTLIB)
 	ldc2 $(DFLAGS) -Ieuvm_dir -link-defaultlib-shared -of$@ $^ -L-luvm-ldc-shared -L-lesdl-ldc-shared \
 		-L-lphobos2-ldc-shared -L-ldl -L-lstdc++
+
+run_reg_tests:
+	./axi_test +UVM_TESTNAME=axi_test.reg_test +UVM_SEQUENCE=uvm.reg.sequences.uvm_reg_bit_bash_seq.uvm_reg_bit_bash_seq +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED)

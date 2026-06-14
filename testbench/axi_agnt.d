@@ -78,3 +78,49 @@ class axi_agent(int DW, int AW): uvm_agent
   } // : connect_phase
 
 } // axi_agent
+
+class axi_reg_agent(int DW, int AW): uvm_agent
+{
+  @UVM_DEFAULT protected int master_axird_id;
+  @UVM_DEFAULT protected int master_axiwr_id;
+
+  @UVM_BUILD_IF_ACTIVE {
+    axi_driver!(DW, AW) driver;
+    axi_sequencer!(DW, AW) seqr;
+  }
+   
+  @UVM_BUILD {
+    axiar_collector!(DW, AW) ar_collector;
+    axiaw_collector!(DW, AW) aw_collector;
+    axib_collector!(DW, AW) b_collector;
+
+    axir_collector!(DW, AW) r_collector;
+    axiw_collector!(DW, AW) w_collector;
+
+    axi_collector!(DW, AW) collector;
+  }
+
+  // Provide implementations of virtual methods such as get_type_name and create
+  mixin uvm_component_utils;
+
+
+  // new - constructor
+  this(string name, uvm_component parent) {
+    super(name, parent);
+  }
+
+  // build_phase
+  // connect_phase
+  override void connect_phase(uvm_phase phase) {
+    if (get_is_active() == UVM_ACTIVE) {
+      driver.seq_item_port.connect(seqr.seq_item_export);
+    }
+
+    ar_collector.item_collected_port.connect(collector.racol_in);
+    aw_collector.item_collected_port.connect(collector.wacol_in);
+    b_collector.item_collected_port.connect(collector.wbcol_in);
+    r_collector.item_collected_port.connect(collector.rdcol_in);
+    w_collector.item_collected_port.connect(collector.wdcol_in);
+
+  }
+}

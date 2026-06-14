@@ -311,7 +311,7 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
   this(string name, uvm_component parent) {
     super(name, parent);
     uvm_config_db!(AxiIntf!(DW, AW)).get(this, "", "vif", vif);
-    assert (vif !is null);
+    assert (vif !is null, get_full_name());
   }
 
   override void build_phase(uvm_phase phase) {
@@ -346,21 +346,21 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
       while (vif.rst == false) wait(vif.clk.negedge());
 
       vif.awaddr  = 0;
-      vif.awid    = 0;
-      vif.awvalid = 0;
-      vif.awlen   = 0;
-      vif.awsize  = 0;
+      vif.awid    = UBVEC!(8, 0);
+      vif.awvalid = false;
+      vif.awlen   = UBVEC!(4, 0);
+      vif.awsize  = UBVEC!(3, 0);
       vif.wdata   = 0;
-      vif.wvalid  = 0;
-      vif.wstrb   = 0;
-      vif.wid     = 0;
-      vif.wlast   = 0;
+      vif.wvalid  = false;
+      vif.wstrb   = UBVEC!(4, 0);
+      // vif.wid     = 0;
+      vif.wlast   = false;
       vif.rready  = true;
       vif.araddr  = 0;
-      vif.arid    = 0;
-      vif.arvalid = 0;
-      vif.arlen   = 0;
-      vif.arsize  = 0;
+      vif.arid    = UBVEC!(8, 0);
+      vif.arvalid = false;
+      vif.arlen   = UBVEC!(4, 0);
+      vif.arsize  = UBVEC!(3, 0);
       vif.bready  = true;
       wait(vif.clk.negedge());
     }
@@ -371,10 +371,10 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
     // @(vif.driver);
     if (trans.op == 1) {
       vif.araddr  = 0;
-      vif.arid    = 0;
-      vif.arvalid = 0;
-      vif.arlen   = 0;
-      vif.arsize  = 0;
+      vif.arid    = UBVEC!(8, 0);
+      vif.arvalid = false;
+      vif.arlen   = UBVEC!(4, 0);
+      vif.arsize  = UBVEC!(3, 0);
       vif.awaddr  = trans.addr;
       vif.awid    = trans.id;
       vif.awvalid = true;
@@ -384,7 +384,7 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
       vif.wdata   = trans.rwdata;
       vif.wvalid  = true;
       vif.wstrb   = trans.strb;
-      vif.wid     = trans.id;
+      // vif.wid     = trans.id;
       vif.wlast   = trans.last;
       fork({
 	  wait(vif.clk.negedge());
@@ -405,14 +405,14 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
 	wait(vif.clk.negedge());
       }
       // trans.resp = vif.bresp;
-      vif.bready  = false;
+      // vif.bready  = false;
     }
     else {
       vif.awaddr  = 0;
-      vif.awid    = 0;
-      vif.awvalid = 0;
-      vif.awlen   = 0;
-      vif.awsize  = 0;
+      vif.awid    = UBVEC!(8, 0);
+      vif.awvalid = false;
+      vif.awlen   = UBVEC!(4, 0);
+      vif.awsize  = UBVEC!(3, 0);
       vif.araddr  = trans.addr;
       vif.arid    = trans.id;
       vif.arvalid = true;
@@ -422,12 +422,12 @@ class axi_driver(int DW, int AW): uvm_driver!(axi_seq_item!(DW, AW))
       vif.wvalid  = false;
       wait(vif.clk.negedge());
 
-      while(vif.arready == 0) {
+      while (vif.arready == false) {
 	wait(vif.clk.negedge());
       }
       vif.arvalid = false;
       vif.rready = true;
-      while(vif.rvalid == 0) {
+      while (vif.rvalid == false) {
 	wait(vif.clk.negedge());
       }
       trans.rwdata = vif.rdata;

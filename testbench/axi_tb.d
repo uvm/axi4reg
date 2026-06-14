@@ -129,18 +129,18 @@ class Top: Entity
     while (true) {
       // writeln("clk is: ", clk);
       dut.axi_aclk = false;
+      clk = false;
       dut.eval();
       if (_trace !is null)
 	_trace.dump(getSimTime().getVal());
-      clk = false;
       wait (10.nsec);
       dut.axi_aclk = true;
+      clk = true;
       dut.eval();
       if (_trace !is null) {
 	_trace.dump(getSimTime().getVal());
 	_trace.flush();
       }
-      clk = true;
       wait (10.nsec);
     }
   }
@@ -171,6 +171,9 @@ class axi_tb: uvm_tb
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.w_collector", "vif", top.axiIntf);
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.r_collector", "vif", top.axiIntf);
     uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.b_collector", "vif", top.axiIntf);
+
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.collector", "vif", top.axiIntf);
+    uvm_config_db!(AxiIntf!(32, 32)).set(null, "uvm_test_top.env.agent.driver", "vif", top.axiIntf);
 
     uvm_config_db!int.set(null, "uvm_test_top.env.agent.dw_seqr", "wait_for_sequences_count", 2);
   }

@@ -19,7 +19,7 @@ class axiar_collector(int DW, int AW): uvm_component
   this(string name, uvm_component parent) {
     super(name, parent);
     uvm_config_db!(AxiIntf!(DW, AW)).get(this, "", "vif", vif);
-    assert (vif !is null);
+    assert (vif !is null, get_full_name());
   }
 
   override void run_phase(uvm_phase phase) {
@@ -361,20 +361,22 @@ class axi_collector(int DW, int AW): uvm_component
 
   mixin uvm_component_utils;
 
+  AxiIntf!(DW, AW) vif;
+  
   @UVM_BUILD {
     uvm_analysis_port!(axi_seq_item!(DW, AW)) item_col_port;
 
-    uvm_analysis_imp!(axib_seq_item!(DW, AW), write_wbcol) wbcol_in;
-    uvm_analysis_imp!(axia_seq_item!(DW, AW), write_wacol) wacol_in;
-    uvm_analysis_imp!(axid_seq_item!(DW, AW), write_wdcol) wdcol_in;
-    uvm_analysis_imp!(axia_seq_item!(DW, AW), write_racol) racol_in;
-    uvm_analysis_imp!(axid_seq_item!(DW, AW), write_rdcol) rdcol_in;
+    uvm_analysis_imp!(write_wbcol) wbcol_in;
+    uvm_analysis_imp!(write_wacol) wacol_in;
+    uvm_analysis_imp!(write_wdcol) wdcol_in;
+    uvm_analysis_imp!(write_racol) racol_in;
+    uvm_analysis_imp!(write_rdcol) rdcol_in;
   }
 
   this(string name, uvm_component parent) {
     super(name, parent);
     uvm_config_db!(AxiIntf!(DW, AW)).get(this, "", "vif", vif);
-    assert (vif !is null);
+    assert (vif !is null, get_full_name());
   }
 
   Queue!(axia_seq_item!(DW, AW)) awqueue;

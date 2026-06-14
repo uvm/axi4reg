@@ -1,0 +1,54 @@
+addrmap axi_regs {
+  littleendian;
+
+  reg {
+    name = "reg0";
+    regwidth = 32;
+    field {
+      name = "f1";
+      hw = r;
+      sw = rw;
+      reset = 0x00;
+    } f1[15:0];
+    field {
+      name = "f2";
+      hw = r;
+      sw = rw;
+      reset = 0x00;
+    } f2[31:16]; 
+  } reg0 @0x0;
+
+  reg {
+    name = "reg1";
+    regwidth = 32;
+    field {
+      name = "val";
+      hw = r;
+      sw = rw;
+      reset = 0x00;
+    } val[31:0]; 
+  } reg1 @0x4;
+
+  reg {
+    name = "reg2";
+    regwidth = 32;
+    field {
+      name = "val";
+      hw = r;
+      sw = rw;
+      reset = 0x00;
+    } val[31:0]; 
+  } reg2 @0x8;
+
+  reg {
+    name = "reg3";
+    regwidth = 32;
+    field {
+      name = "val";
+      hw = r;
+      sw = rw;
+      reset = 0x00;
+    } val[31:0]; 
+  } reg3 @0xC;
+
+};

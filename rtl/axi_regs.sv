@@ -238,15 +238,15 @@ module axi_regs #(
         READ_DONE
     } read_state_t;
 
+   read_state_t v_state_r;
+   logic [31:0] v_rdata_r;
+   logic [1:0]  v_rresp_r;
+   logic [$clog2(MAX_MEMORY_LATENCY)-1:0] v_mem_wait_count_r;
+   // combinatorial helper variables
+   logic                                  v_addr_hit_r;
+
     always_ff@(posedge axi_aclk or negedge axi_aresetn) begin: read_fsm
         // registered state variables
-        read_state_t v_state_r;
-        logic [31:0] v_rdata_r;
-        logic [1:0] v_rresp_r;
-        logic [$clog2(MAX_MEMORY_LATENCY)-1:0] v_mem_wait_count_r;
-        // combinatorial helper variables
-        logic v_addr_hit;
-        logic [AXI_ADDR_WIDTH-1:0] v_mem_addr;
         if (~axi_aresetn) begin
             v_state_r          <= READ_IDLE;
             v_rdata_r          <= '0;
@@ -280,197 +280,197 @@ module axi_regs #(
                 // Read from the actual storage element
                 READ_REGISTER: begin
                     // defaults:
-                    v_addr_hit = 1'b0;
+                    v_addr_hit_r = 1'b0;
                     v_rdata_r  <= '0;
 
                     // register 'reg0' at address offset 0x0
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG0_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg0_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg1' at address offset 0x4
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG1_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg1_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg2' at address offset 0x8
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG2_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg2_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg3' at address offset 0xC
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG3_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg3_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg4' at address offset 0x10
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG4_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg4_value;
                         s_reg4_strobe_r <= 1'b1;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg6' at address offset 0x18
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG6_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[0:0] <= s_reg_reg6_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg7' at address offset 0x1C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG7_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg7_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg8' at address offset 0x20
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG8_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg8_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg9' at address offset 0x24
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG9_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg9_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg10' at address offset 0x28
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG10_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg10_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg11' at address offset 0x2C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG11_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg11_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg12' at address offset 0x30
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG12_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg12_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg13' at address offset 0x34
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG13_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg13_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg14' at address offset 0x38
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG14_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg14_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg15' at address offset 0x3C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG15_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg15_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg16' at address offset 0x40
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG16_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg16_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg17' at address offset 0x44
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG17_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg17_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg18' at address offset 0x48
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG18_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg18_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg19' at address offset 0x4C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG19_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg19_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg20' at address offset 0x50
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG20_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg20_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg21' at address offset 0x54
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG21_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg21_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg22' at address offset 0x58
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG22_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg22_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg23' at address offset 0x5C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG23_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg23_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg24' at address offset 0x60
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG24_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg24_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg25' at address offset 0x64
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG25_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg25_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg26' at address offset 0x68
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG26_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg26_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg27' at address offset 0x6C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG27_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg27_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg28' at address offset 0x70
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG28_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg28_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg29' at address offset 0x74
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG29_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg29_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg30' at address offset 0x78
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG30_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg30_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
                     // register 'reg31' at address offset 0x7C
                     if (s_axi_araddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG31_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_r = 1'b1;
                         v_rdata_r[31:0] <= s_reg_reg31_value_r;
                         v_state_r <= READ_RESPONSE;
                     end
-                    if (v_addr_hit) begin
+                    if (v_addr_hit_r) begin
                         v_rresp_r <= AXI_OKAY;
                     end else begin
                         v_rresp_r <= AXI_DECERR;
@@ -525,14 +525,14 @@ module axi_regs #(
         WRITE_DONE
     } write_state_t;
 
+   // registered state variables
+   write_state_t v_state_w;
+   // combinatorial helper variables
+   logic v_addr_hit_w;
+
     always_ff@(posedge axi_aclk or negedge axi_aresetn) begin: write_fsm
-        // registered state variables
-        write_state_t v_state_r;
-        // combinatorial helper variables
-        logic v_addr_hit;
-        logic [AXI_ADDR_WIDTH-1:0] v_mem_addr;
         if (~axi_aresetn) begin
-            v_state_r                   <= WRITE_IDLE;
+            v_state_w                   <= WRITE_IDLE;
             s_axi_awready_r             <= 1'b0;
             s_axi_wready_r              <= 1'b0;
             s_axi_awaddr_reg_r          <= '0;
@@ -638,9 +638,9 @@ module axi_regs #(
             s_reg29_strobe_r <= '0;
             s_reg30_strobe_r <= '0;
             s_reg31_strobe_r <= '0;
-            v_addr_hit = 1'b0;
+            v_addr_hit_w = 1'b0;
 
-            case (v_state_r)
+            case (v_state_w)
 
                 // Wait for the start of a write transaction, which may be
                 // initiated by either of the following conditions:
@@ -654,16 +654,16 @@ module axi_regs #(
                         s_axi_wdata_reg_r  <= s_axi_wdata; // save the write-data
                         s_axi_wstrb_reg_r  <= s_axi_wstrb; // save the write-strobe
                         s_axi_wready_r     <= 1'b1; // acknowledge the write-data
-                        v_state_r          <= WRITE_UPDATE_REGISTER;
+                        v_state_w          <= WRITE_UPDATE_REGISTER;
                     end else if (s_axi_awvalid) begin
                         s_axi_awaddr_reg_r <= s_axi_awaddr; // save the write-address
                         s_axi_awready_r    <= 1'b1; // acknowledge the write-address
-                        v_state_r          <= WRITE_ADDR_FIRST;
+                        v_state_w          <= WRITE_ADDR_FIRST;
                     end else if (s_axi_wvalid) begin
                         s_axi_wdata_reg_r <= s_axi_wdata; // save the write-data
                         s_axi_wstrb_reg_r <= s_axi_wstrb; // save the write-strobe
                         s_axi_wready_r    <= 1'b1; // acknowledge the write-data
-                        v_state_r         <= WRITE_DATA_FIRST;
+                        v_state_w         <= WRITE_DATA_FIRST;
                     end
                 end
 
@@ -673,7 +673,7 @@ module axi_regs #(
                         s_axi_wdata_reg_r <= s_axi_wdata; // save the write-data
                         s_axi_wstrb_reg_r <= s_axi_wstrb; // save the write-strobe
                         s_axi_wready_r    <= 1'b1; // acknowledge the write-data
-                        v_state_r         <= WRITE_UPDATE_REGISTER;
+                        v_state_w         <= WRITE_UPDATE_REGISTER;
                     end
                 end
 
@@ -682,7 +682,7 @@ module axi_regs #(
                     if (s_axi_awvalid) begin
                         s_axi_awaddr_reg_r <= s_axi_awaddr; // save the write-address
                         s_axi_awready_r    <= 1'b1; // acknowledge the write-address
-                        v_state_r          <= WRITE_UPDATE_REGISTER;
+                        v_state_w          <= WRITE_UPDATE_REGISTER;
                     end
                 end
 
@@ -693,7 +693,7 @@ module axi_regs #(
 
                     // register 'reg0' at address offset 0x0
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG0_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg0_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -796,7 +796,7 @@ module axi_regs #(
 
                     // register 'reg1' at address offset 0x4
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG1_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg1_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -899,7 +899,7 @@ module axi_regs #(
 
                     // register 'reg2' at address offset 0x8
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG2_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg2_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1002,7 +1002,7 @@ module axi_regs #(
 
                     // register 'reg3' at address offset 0xC
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG3_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg3_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1106,7 +1106,7 @@ module axi_regs #(
 
                     // register 'reg5' at address offset 0x14
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG5_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg5_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1209,7 +1209,7 @@ module axi_regs #(
 
                     // register 'reg6' at address offset 0x18
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG6_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
                             if (s_axi_wdata_reg_r[0]) begin // ONE_TO_CLEAR
@@ -1220,7 +1220,7 @@ module axi_regs #(
 
                     // register 'reg7' at address offset 0x1C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG7_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg7_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1323,7 +1323,7 @@ module axi_regs #(
 
                     // register 'reg8' at address offset 0x20
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG8_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg8_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1426,7 +1426,7 @@ module axi_regs #(
 
                     // register 'reg9' at address offset 0x24
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG9_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg9_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1529,7 +1529,7 @@ module axi_regs #(
 
                     // register 'reg10' at address offset 0x28
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG10_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg10_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1632,7 +1632,7 @@ module axi_regs #(
 
                     // register 'reg11' at address offset 0x2C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG11_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg11_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1735,7 +1735,7 @@ module axi_regs #(
 
                     // register 'reg12' at address offset 0x30
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG12_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg12_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1838,7 +1838,7 @@ module axi_regs #(
 
                     // register 'reg13' at address offset 0x34
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG13_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg13_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -1941,7 +1941,7 @@ module axi_regs #(
 
                     // register 'reg14' at address offset 0x38
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG14_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg14_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2044,7 +2044,7 @@ module axi_regs #(
 
                     // register 'reg15' at address offset 0x3C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG15_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg15_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2147,7 +2147,7 @@ module axi_regs #(
 
                     // register 'reg16' at address offset 0x40
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG16_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg16_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2250,7 +2250,7 @@ module axi_regs #(
 
                     // register 'reg17' at address offset 0x44
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG17_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg17_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2353,7 +2353,7 @@ module axi_regs #(
 
                     // register 'reg18' at address offset 0x48
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG18_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg18_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2456,7 +2456,7 @@ module axi_regs #(
 
                     // register 'reg19' at address offset 0x4C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG19_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg19_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2559,7 +2559,7 @@ module axi_regs #(
 
                     // register 'reg20' at address offset 0x50
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG20_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg20_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2662,7 +2662,7 @@ module axi_regs #(
 
                     // register 'reg21' at address offset 0x54
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG21_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg21_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2765,7 +2765,7 @@ module axi_regs #(
 
                     // register 'reg22' at address offset 0x58
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG22_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg22_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2868,7 +2868,7 @@ module axi_regs #(
 
                     // register 'reg23' at address offset 0x5C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG23_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg23_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -2971,7 +2971,7 @@ module axi_regs #(
 
                     // register 'reg24' at address offset 0x60
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG24_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg24_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3074,7 +3074,7 @@ module axi_regs #(
 
                     // register 'reg25' at address offset 0x64
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG25_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg25_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3177,7 +3177,7 @@ module axi_regs #(
 
                     // register 'reg26' at address offset 0x68
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG26_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg26_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3280,7 +3280,7 @@ module axi_regs #(
 
                     // register 'reg27' at address offset 0x6C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG27_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg27_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3383,7 +3383,7 @@ module axi_regs #(
 
                     // register 'reg28' at address offset 0x70
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG28_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg28_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3486,7 +3486,7 @@ module axi_regs #(
 
                     // register 'reg29' at address offset 0x74
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG29_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg29_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3589,7 +3589,7 @@ module axi_regs #(
 
                     // register 'reg30' at address offset 0x78
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG30_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg30_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3692,7 +3692,7 @@ module axi_regs #(
 
                     // register 'reg31' at address offset 0x7C
                     if (s_axi_awaddr_reg_r[AXI_ADDR_WIDTH-1:2] == BASEADDR[AXI_ADDR_WIDTH-1:2] + axi_regs_pkg::REG31_OFFSET[AXI_ADDR_WIDTH-1:2]) begin
-                        v_addr_hit = 1'b1;
+                        v_addr_hit_w = 1'b1;
                         s_reg31_strobe_r <= 1'b1;
                         // field 'value':
                         if (s_axi_wstrb_reg_r[0]) begin
@@ -3793,23 +3793,24 @@ module axi_regs #(
                         end
                     end
 
-                    if (!v_addr_hit) begin
+                    if (!v_addr_hit_w) begin
                         s_axi_bresp_r   <= AXI_DECERR;
                         // pragma translate_off
                         $warning("AWADDR decode error");
                         // pragma translate_on
                     end
-                    v_state_r <= WRITE_DONE;
+                    v_state_w <= WRITE_DONE;
                 end
 
                 // Write transaction completed, wait for master BREADY to proceed
                 WRITE_DONE: begin
                     if (s_axi_bready) begin
                         s_axi_bvalid_r <= 1'b0;
-                        v_state_r      <= WRITE_IDLE;
+                        v_state_w      <= WRITE_IDLE;
                     end
                 end
-            endcase
+            endcase // case (v_state_w)
+           
 
             if (reg6_value_set) begin // pulsed to set the field 'reg6.value' to 1'b1
                 s_reg_reg6_value_r <= '1;

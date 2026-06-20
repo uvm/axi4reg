@@ -153,6 +153,9 @@ class Top: Entity
     dut.axi_aresetn = true;
   }
   
+  override void doFinish() {
+    closetrace();
+  }
 }
 
 
